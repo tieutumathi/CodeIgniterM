@@ -124,6 +124,13 @@ class CI_Loader {
 		'user_agent' => 'agent'
 	);
 
+	/**
+	 * List of loaded Modules
+	 *
+	 * @package CodeigniterM
+	 * @var	array
+	 */
+	protected $_ci_modules =	array();
 	// --------------------------------------------------------------------
 
 	/**
@@ -351,6 +358,95 @@ class CI_Loader {
 
 		$this->_ci_models[] = $name;
 		$CI->$name = new $model();
+		return $this;
+	}
+
+	/**
+	 * Modules Loader
+	 *
+	 * Loads and instantiates modules.
+	 * Designed to be called from application controllers.
+	 *
+	 * @package CodeigniterM
+	 * @param	string	$module		Module name
+	 * @param	array	$params		Optional parameters to pass to the module class constructor
+	 * @param	string	$object_name	An optional object name to assign to
+	 * @return	object
+	 */
+	public function module($module, $params = NULL, $object_name = NULL)
+	{
+		if (empty($module))
+		{
+			return $this;
+		}
+		elseif (is_array($module))
+		{
+			foreach ($module as $key => $value)
+			{
+				if (is_int($key))
+				{
+					$this->module($value, $params);
+				}
+				else
+				{
+					$this->module($key, $params, $value);
+				}
+			}
+			return $this;
+		}
+
+		// Note: All of the code under this condition used to be just:
+		//
+		//       load_class('Module', 'core');
+		//
+		//       However, load_class() instantiates classes
+		//       to cache them for later use and that prevents
+		//       MY_Module from being an abstract class and is
+		//       sub-optimal otherwise anyway.
+		if ( ! class_exists('CI_Module', FALSE))
+		{
+			$app_path = APPPATH.'core'.DIRECTORY_SEPARATOR;
+			if (file_exists($app_path.'Module.php'))
+			{
+				require_once($app_path.'Module.php');
+				if ( ! class_exists('CI_Model', FALSE))
+				{
+					throw new RuntimeException($app_path."Module.php exists, but doesn't declare class CI_Model");
+				}
+			}
+			elseif ( ! class_exists('CI_Module', FALSE))
+			{
+				require_once(BASEPATH.'core'.DIRECTORY_SEPARATOR.'Module.php');
+			}
+
+			$class = config_item('subclass_prefix').'Module';
+			if (file_exists($app_path.$class.'.php'))
+			{
+				require_once($app_path.$class.'.php');
+				if ( ! class_exists($class, FALSE))
+				{
+					throw new RuntimeException($app_path.$class.".php exists, but doesn't declare class ".$class);
+				}
+			}
+		}
+		
+		$path = APPPATH . 'controllers/' .$module . '/';
+        if(!file_exists($path))
+        {
+            throw new RuntimeException('The module name you are loading is not found: '.$module);
+        }
+		
+		$module = ucfirst($module);
+		if (in_array($module, $this->_ci_modules, TRUE))
+		{
+			return $this;
+		}			
+		
+		$CI =& get_instance();
+		$this->add_package_path($path);
+		$this->_ci_autoloader_module($module);
+		$this->_ci_modules[] = $module;
+		$CI->$module = new CI_Module($module);
 		return $this;
 	}
 

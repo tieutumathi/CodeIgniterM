@@ -1,37 +1,35 @@
 # CodeigniterM
-Modification of Codeigniter 3 to support Addon Modules
-1. Addon Modules are storage in controller folder
-   (i) Minimized recode the Codeigniter
-   (ii) Security advice
+
+	Modification of Codeigniter 3 to support Addon Modules
 
 # Modification
 
-1. Add Module.php class to System/Core/
+	1. Add Module.php class to System/Core/
 
-2. Modified Loader.php
+	2. Modified Loader.php
 
-	(i) Add class prottect varialbe 
+		(i) Add class prottect varialbe 
 	
-   	/**
-	 * List of loaded Modules
-	 *
-	 * @package CodeigniterM
-	 * @var	array
-	 */
-	protected $_ci_modules =	array();
+		   	/**
+			 * List of loaded Modules
+	   	 	 *
+			 * @package CodeigniterM
+			 * @var	array
+			 */
+			protected $_ci_modules =	array();
 
-	(ii) Add class loader function
+		(ii) Add class loader function
 	
-	/**
-	 * CI Autoloader for Addon Modules
-	 *
-	 * Loads component listed in the modules/config/autoload.php file.
-	 *
-	 * @package CodeIgniterM 
-	 * @used-by	CI_Loader::module()
-	 * @return	void
-	 */
-	protected function _ci_autoloader_module($module)
+			/**
+			 * CI Autoloader for Addon Modules
+			 *
+			 * Loads component listed in the modules/config/autoload.php file.
+			 *
+			 * @package CodeIgniterM 
+			 * @used-by	CI_Loader::module()
+			 * @return	void
+			 */
+			protected function _ci_autoloader_module($module)
 	
 # How to use it?
 	

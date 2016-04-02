@@ -8,7 +8,7 @@
 
 	2. Modified Loader.php
 
-		(i) Add class prottect varialbe 
+		(i) Add Loader->_ci_modules variable
 	
 		   	/**
 			 * List of loaded Modules
@@ -18,10 +18,24 @@
 			 */
 			protected $_ci_modules =	array();
 
-		(ii) Add class loader function
-	
+		(ii) Add Loader->module() fucntion
 			/**
-			 * CI Autoloader for Addon Modules
+			 * Modules Loader
+			 *
+			 * Loads and instantiates modules.
+			 * Designed to be called from application controllers.
+			 *
+			 * @package CodeigniterM
+			 * @param	string	$module		Module name
+			 * @param	array	$params		Optional parameters to pass to the module class constructor
+			 * @param	string	$object_name	An optional object name to assign to
+			 * @return	object
+			 */
+			 public function module($module, $params = NULL, $object_name = NULL)
+			
+		(iii) Add Loader->_ci_autoloader_module() function
+			/**
+	 		 * CI Autoloader for Addon Modules
 			 *
 			 * Loads component listed in the modules/config/autoload.php file.
 			 *
@@ -29,7 +43,7 @@
 			 * @used-by	CI_Loader::module()
 			 * @return	void
 			 */
-			protected function _ci_autoloader_module($module)
+			 protected function _ci_autoloader_module($module)
 	
 # How to use it?
 	

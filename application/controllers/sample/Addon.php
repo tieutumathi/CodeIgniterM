@@ -21,6 +21,8 @@ class Addon extends CI_Controller {
 	public function index()
 	{
 		$this->load->module('sample');
-		$this->load->view('sample_addon');
+		$this->load->model('Test_model');
+		$data['test_model_data'] = $this->Sample->Test_model->show_test();
+		$this->load->view('sample_addon', $data);
 	}
 }

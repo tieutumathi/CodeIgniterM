@@ -1469,6 +1469,86 @@ class CI_Loader {
 		}
 	}
 
+	/**
+	 * CI Autoloader for Addon Modules
+	 *
+	 * Loads component listed in the modules/config/autoload.php file.
+	 *
+	 * @package CodeIgniterM 
+	 * @used-by	CI_Loader::module()
+	 * @return	void
+	 */
+	protected function _ci_autoloader_module($module)
+	{
+		if ( ! isset($autoload))
+		{
+			return;
+		}
+		
+		if (file_exists(APPPATH.'controllers/'. $module .'/config/autoload.php'))
+		{
+			include(APPPATH.'controllers/'. $module .'/config/autoload.php');
+		}
+
+		if (file_exists(APPPATH.'controllers/'. $module .'config/'.ENVIRONMENT.'/autoload.php'))
+		{
+			include(APPPATH.'controllers/'. $module .'config/'.ENVIRONMENT.'/autoload.php');
+		}
+
+		// Autoload packages
+		if (isset($autoload['packages']))
+		{
+			foreach ($autoload['packages'] as $package_path)
+			{
+				$this->add_package_path($package_path);
+			}
+		}
+
+		// Load any custom config file
+		if (count($autoload['config']) > 0)
+		{
+			foreach ($autoload['config'] as $val)
+			{
+				$this->config($val);
+			}
+		}
+
+		// Autoload helpers and languages
+		foreach (array('helper', 'language') as $type)
+		{
+			if (isset($autoload[$type]) && count($autoload[$type]) > 0)
+			{
+				$this->$type($autoload[$type]);
+			}
+		}
+
+		// Autoload drivers
+		if (isset($autoload['drivers']))
+		{
+			$this->driver($autoload['drivers']);
+		}
+
+		// Load libraries
+		if (isset($autoload['libraries']) && count($autoload['libraries']) > 0)
+		{
+			// Load the database driver.
+			if (in_array('database', $autoload['libraries']))
+			{
+				$this->database();
+				$autoload['libraries'] = array_diff($autoload['libraries'], array('database'));
+			}
+
+			// Load all other libraries
+			$this->library($autoload['libraries']);
+		}
+
+		// Autoload models
+		if (isset($autoload['model']))
+		{
+			$this->model($autoload['model']);
+		}
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
